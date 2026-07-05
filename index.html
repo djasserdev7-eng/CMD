@@ -74,7 +74,7 @@
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <h2 class="text-2xl font-bold" data-i18n="dashboardTitle">إدارة الموظفين والأجور</h2>
             <div class="flex gap-4 w-full md:w-auto">
-                <input type="text" id="searchInput" class="px-4 py-2 border rounded-lg w-full md:w-64 focus:ring-2 focus:ring-blue-900" data-i18n-placeholder="search" placeholder="بحث بالاسم...">
+                <input type="text" id="searchInput" class="px-4 py-2 border rounded-lg w-full md:w-64 focus:ring-2 focus:ring-blue-900" placeholder="بحث بالاسم...">
                 <button id="addEmpBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2">
                     <i class="fas fa-user-plus"></i> <span data-i18n="addEmployee">إضافة موظف</span>
                 </button>
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <!-- Invoicing Section (New) -->
+    <!-- Invoicing Section -->
     <div id="invoicingSection" class="hidden max-w-7xl mx-auto px-4 py-8 tab-section">
         <h2 class="text-2xl font-bold mb-6" data-i18n="createInvoice">إصدار فاتورة جديدة</h2>
         
@@ -162,7 +162,6 @@
                     </tr>
                 </thead>
                 <tbody id="invoiceTableBody">
-                    <!-- Default Items mirroring the image -->
                 </tbody>
             </table>
             
@@ -201,9 +200,8 @@
         </div>
     </div>
 
-    <!-- Modals (Add Employee, Payroll) - Kept intact from previous code -->
+    <!-- Employee Modal -->
     <div id="empModal" class="modal fixed inset-0 z-50 items-center justify-center">
-        <!-- ... (Employee Modal Code omitted for brevity in preview, but fully preserved below) ... -->
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
             <button class="close-modal absolute top-4 right-4 text-gray-500 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
             <h3 class="text-xl font-bold mb-4" id="modalTitle" data-i18n="addEmployee">إضافة موظف</h3>
@@ -212,13 +210,14 @@
                 <div><label class="block text-sm mb-1" data-i18n="empId">الرقم الوظيفي</label><input type="text" id="formEmpId" class="w-full border rounded p-2"></div>
                 <div><label class="block text-sm mb-1" data-i18n="empName">الاسم واللقب</label><input type="text" id="formEmpName" class="w-full border rounded p-2"></div>
                 <div><label class="block text-sm mb-1" data-i18n="empPosition">المنصب / الرتبة</label><input type="text" id="formEmpPosition" class="w-full border rounded p-2"></div>
-                <div><label class="block text-sm mb-1" data-i18n="empAffectation">جهة التعيين</label><input type="text" id="formEmpAffectation" class="w-full border rounded p-2"></div>
+                <div><label class="block text-sm mb-1" data-i18n="empAffectation">جهة التعيين (اختياري)</label><input type="text" id="formEmpAffectation" class="w-full border rounded p-2"></div>
                 <div><label class="block text-sm mb-1" data-i18n="empBase">الأجر القاعدي (DZD)</label><input type="number" id="formEmpBase" class="w-full border rounded p-2"></div>
                 <button id="saveEmpBtn" class="w-full bg-blue-900 text-white py-2 rounded hover:bg-blue-800 font-bold" data-i18n="save">حفظ البيانات</button>
             </div>
         </div>
     </div>
 
+    <!-- Payroll Modal -->
     <div id="payrollModal" class="modal fixed inset-0 z-50 items-center justify-center overflow-y-auto py-10">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative m-auto">
             <button class="close-modal absolute top-4 right-4 text-gray-500 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
@@ -239,6 +238,7 @@
                     <input type="number" id="payIep" class="border rounded p-1 w-32 text-center focus:ring-2" value="0">
                 </div>
                 <button id="calcBtn" class="w-full bg-yellow-500 text-white py-2 rounded font-bold hover:bg-yellow-600 my-2" data-i18n="calcAction">تنفيذ الحساب</button>
+                
                 <div class="bg-gray-100 p-3 rounded space-y-2">
                     <div class="flex justify-between text-sm text-red-600"><span data-i18n="cnas">الضمان الاجتماعي</span><span id="resCnas" class="font-bold">0.00</span></div>
                     <div class="flex justify-between text-sm text-red-600"><span data-i18n="irg">الضريبة (IRG)</span><span id="resIrg" class="font-bold">0.00</span></div>
@@ -257,6 +257,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, get, set, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyBdrY8jU9n0oHgjAwxTuQquRIHMWjz6UA0",
             authDomain: "rabi-5948f.firebaseapp.com",
@@ -276,7 +277,7 @@
         let currentCalculatedPayroll = null;
         let currentCompanyName = "BOUCHELA TAHAR"; 
 
-        // I18n Dictionary
+        // قواميس الترجمة
         const translations = {
             ar: {
                 appTitle: "نظام الأجور والفوترة", logout: "تسجيل الخروج", loginTitle: "تسجيل الدخول",
@@ -308,6 +309,7 @@
             }
         };
 
+        // تحديث الواجهة واللغة
         function updateUI() {
             document.documentElement.lang = currentLang;
             document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
@@ -320,6 +322,7 @@
 
         document.getElementById('langSelect').addEventListener('change', (e) => { currentLang = e.target.value; updateUI(); });
 
+        // تبديل النوافذ بين (الموارد البشرية) و (الفواتير)
         window.switchTab = (tab) => {
             document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active', 'border-white'));
@@ -330,14 +333,13 @@
             } else if (tab === 'invoice') {
                 document.getElementById('invoicingSection').classList.remove('hidden');
                 document.getElementById('tab-invoice').classList.add('active', 'border-white');
-                // Set default date to today
                 if(!document.getElementById('invDate').value) {
                     document.getElementById('invDate').value = new Date().toISOString().split('T')[0];
                 }
             }
         };
 
-        // Auth
+        // ================= نظام تسجيل الدخول Auth =================
         async function setupAdmin() {
             const usersRef = ref(db, 'utilisateurs/admin');
             const snapshot = await get(usersRef);
@@ -363,9 +365,7 @@
             }
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            window.location.reload();
-        });
+        document.getElementById('logoutBtn').addEventListener('click', () => { window.location.reload(); });
 
         const closeModals = () => document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
         document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', closeModals));
@@ -382,10 +382,13 @@
 
         document.getElementById('saveCompanyBtn').addEventListener('click', async () => {
             const newName = document.getElementById('companyNameInput').value.trim();
-            if(newName) await set(ref(db, 'parametres/nom_entreprise'), newName);
+            if(newName) {
+                await set(ref(db, 'parametres/nom_entreprise'), newName);
+                alert("تم الحفظ!");
+            }
         });
 
-        // ================= HR LOGIC =================
+        // ================= الموارد البشرية HR LOGIC =================
         document.getElementById('addEmpBtn').addEventListener('click', () => {
             document.querySelectorAll('#empModal input[type="text"], #empModal input[type="number"]').forEach(inpt => inpt.value = '');
             document.getElementById('editEmpId').value = '';
@@ -421,11 +424,13 @@
                         <td class="px-4 py-2 text-center">
                             <button onclick="editEmp('${key}')" class="text-blue-600 mx-1"><i class="fas fa-edit"></i></button>
                             <button onclick="deleteEmp('${key}')" class="text-red-600 mx-1"><i class="fas fa-trash"></i></button>
-                            <button onclick="openPayroll('${key}')" class="bg-blue-100 px-2 py-1 rounded text-sm"><i class="fas fa-calculator"></i> الأجر</button>
+                            <button onclick="openPayroll('${key}')" class="bg-blue-100 px-2 py-1 rounded text-sm hover:bg-blue-200 transition"><i class="fas fa-calculator"></i> الأجر</button>
                         </td>
                     </tr>`;
             });
         }
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => renderTable(employeesData, e.target.value));
 
         window.editEmp = (key) => {
             const emp = employeesData[key];
@@ -438,31 +443,124 @@
             document.getElementById('empModal').classList.add('active');
         };
 
-        window.deleteEmp = async (key) => { if(confirm("حذف؟")) await remove(ref(db, `employes/${key}`)); };
+        window.deleteEmp = async (key) => { if(confirm("هل أنت متأكد من الحذف؟")) await remove(ref(db, `employes/${key}`)); };
         
+        // ================= الأجور Payroll LOGIC =================
         window.openPayroll = (key) => {
             const emp = employeesData[key];
             document.getElementById('payEmpId').value = key;
             document.getElementById('payrollEmpName').innerText = emp.nom;
             document.getElementById('payBase').value = emp.salaire_base;
-            document.getElementById('payNuisance').value = 0; document.getElementById('payIep').value = 0;
-            document.getElementById('resCnas').innerText = "0.00"; document.getElementById('resIrg').innerText = "0.00"; document.getElementById('resNet').innerText = "0.00";
+            document.getElementById('payNuisance').value = 0; 
+            document.getElementById('payIep').value = 0;
+            document.getElementById('resCnas').innerText = "0.00"; 
+            document.getElementById('resIrg').innerText = "0.00"; 
+            document.getElementById('resNet').innerText = "0.00";
+            currentCalculatedPayroll = null; // إعادة ضبط
             document.getElementById('payrollModal').classList.add('active');
         };
 
         document.getElementById('calcBtn').addEventListener('click', () => {
-            const base = parseFloat(document.getElementById('payBase').value)||0, nuisance = parseFloat(document.getElementById('payNuisance').value)||0, iep = parseFloat(document.getElementById('payIep').value)||0;
-            const assietteSS = base + nuisance + iep, cnas = assietteSS * 0.09, assietteIRG = assietteSS - cnas;
+            const base = parseFloat(document.getElementById('payBase').value)||0, 
+                  nuisance = parseFloat(document.getElementById('payNuisance').value)||0, 
+                  iep = parseFloat(document.getElementById('payIep').value)||0;
+            
+            const assietteSS = base + nuisance + iep;
+            const cnas = assietteSS * 0.09;
+            const assietteIRG = assietteSS - cnas;
+            
             let irg = 0;
             if (assietteIRG > 30000 && assietteIRG <= 35000) irg = (assietteIRG - 30000) * (8 / 3);
             else if (assietteIRG > 35000 && assietteIRG <= 120000) irg = (assietteIRG - 30000) * 0.3;
             else if (assietteIRG > 120000) irg = ((assietteIRG - 120000) * 0.35) + 27000;
+            
             const netPay = assietteSS - cnas - irg;
-            document.getElementById('resCnas').innerText = cnas.toFixed(2); document.getElementById('resIrg').innerText = irg.toFixed(2); document.getElementById('resNet').innerText = netPay.toFixed(2);
+            
+            document.getElementById('resCnas').innerText = cnas.toFixed(2); 
+            document.getElementById('resIrg').innerText = irg.toFixed(2); 
+            document.getElementById('resNet').innerText = netPay.toFixed(2);
+            
             currentCalculatedPayroll = { base, nuisance, iep, cnas, irg, netPay, mois: new Date().getMonth() + 1, annee: new Date().getFullYear() };
         });
 
-        // ================= INVOICING LOGIC =================
+        // زر حفظ بيانات الراتب في قاعدة البيانات
+        document.getElementById('savePayrollBtn').addEventListener('click', async () => {
+            if (!currentCalculatedPayroll) { alert("يرجى الضغط على 'تنفيذ الحساب' أولاً قبل الحفظ."); return; }
+
+            const empId = document.getElementById('payEmpId').value;
+            const empName = document.getElementById('payrollEmpName').innerText;
+            
+            const payrollData = {
+                employe_id: empId, employe_nom: empName,
+                salaire_base: currentCalculatedPayroll.base, prime_nuisance: currentCalculatedPayroll.nuisance, prime_iep: currentCalculatedPayroll.iep,
+                cnas: currentCalculatedPayroll.cnas, irg: currentCalculatedPayroll.irg, net_a_payer: currentCalculatedPayroll.netPay,
+                mois: currentCalculatedPayroll.mois, annee: currentCalculatedPayroll.annee, date_calcul: new Date().toISOString()
+            };
+
+            try {
+                await push(ref(db, 'paies'), payrollData);
+                alert("تم حفظ الراتب بنجاح في قاعدة البيانات!");
+                closeModals();
+            } catch (error) {
+                console.error("Error saving payroll: ", error);
+                alert("حدث خطأ أثناء حفظ البيانات.");
+            }
+        });
+
+        // زر استخراج كشف الراتب (Fiche de Paie) بصيغة PDF
+        document.getElementById('printPdfBtn').addEventListener('click', () => {
+            if (!currentCalculatedPayroll) { alert("يرجى الضغط على 'تنفيذ الحساب' أولاً قبل الاستخراج."); return; }
+
+            const empName = document.getElementById('payrollEmpName').innerText;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(22);
+            doc.text(currentCompanyName, 105, 20, { align: "center" });
+            doc.setFontSize(16);
+            doc.text("FICHE DE PAIE", 105, 30, { align: "center" });
+            
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Nom et Prenom: ${empName}`, 20, 45);
+            doc.text(`Mois: ${currentCalculatedPayroll.mois.toString().padStart(2, '0')} / ${currentCalculatedPayroll.annee}`, 20, 52);
+
+            const tableData = [
+                ["Salaire de Base", currentCalculatedPayroll.base.toFixed(2)],
+                ["Prime de Nuisance", currentCalculatedPayroll.nuisance.toFixed(2)],
+                ["Prime d'Experience (IEP)", currentCalculatedPayroll.iep.toFixed(2)],
+                ["Retenue CNAS (9%)", "- " + currentCalculatedPayroll.cnas.toFixed(2)],
+                ["Retenue IRG", "- " + currentCalculatedPayroll.irg.toFixed(2)]
+            ];
+
+            doc.autoTable({
+                startY: 60,
+                head: [["Rubrique", "Montant (DZD)"]],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [30, 58, 138], textColor: 255, fontStyle: 'bold' },
+                styles: { fontSize: 11, cellPadding: 4 },
+                columnStyles: { 1: { halign: 'right', fontStyle: 'bold' } }
+            });
+
+            const finalY = doc.lastAutoTable.finalY;
+
+            doc.setFillColor(240, 253, 244); 
+            doc.rect(14, finalY + 5, 182, 12, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(21, 128, 61); 
+            doc.text("NET A PAYER:", 20, finalY + 13);
+            doc.text(currentCalculatedPayroll.netPay.toFixed(2) + " DZD", 190, finalY + 13, { align: "right" });
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "normal");
+            doc.text("Signature Employeur", 150, finalY + 35);
+
+            doc.save(`Fiche_Paie_${empName.replace(/\s+/g, '_')}_${currentCalculatedPayroll.mois}_${currentCalculatedPayroll.annee}.pdf`);
+        });
+
+        // ================= نظام الفواتير INVOICING LOGIC =================
 
         let invoiceItems = [
             { des: 'BRIQUE Q 12', u: 'U', qt: 1000.00, pu: 40.00 },
@@ -498,7 +596,6 @@
             document.getElementById('invTVA').innerText = tva.toFixed(2);
             document.getElementById('invTotalTTC').innerText = totalTTC.toFixed(2);
 
-            // Update words
             const words = numberToFrenchWords(totalTTC);
             document.getElementById('invAmountWords').innerText = words + " dinars algériens";
         }
@@ -508,17 +605,9 @@
             renderInvoiceTable();
         };
 
-        window.addInvoiceRow = () => {
-            invoiceItems.push({ des: '', u: 'U', qt: 1, pu: 0 });
-            renderInvoiceTable();
-        };
+        window.addInvoiceRow = () => { invoiceItems.push({ des: '', u: 'U', qt: 1, pu: 0 }); renderInvoiceTable(); };
+        window.removeInvItem = (index) => { invoiceItems.splice(index, 1); renderInvoiceTable(); };
 
-        window.removeInvItem = (index) => {
-            invoiceItems.splice(index, 1);
-            renderInvoiceTable();
-        };
-
-        // Number to French Words Simple Converter (for standard invoice amounts)
         function numberToFrenchWords(num) {
             if (num === 0) return "zéro";
             const units = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
@@ -536,9 +625,8 @@
                     else {
                         let d = Math.floor(rem / 10);
                         let u = rem % 10;
-                        if (d === 7 || d === 9) {
-                            res += tens[d - 1] + (u === 1 ? "-et-onze" : "-" + teens[u]);
-                        } else {
+                        if (d === 7 || d === 9) res += tens[d - 1] + (u === 1 ? "-et-onze" : "-" + teens[u]);
+                        else {
                             res += tens[d];
                             if (u > 0) res += (u === 1 ? "-et-un" : "-" + units[u]);
                         }
@@ -565,7 +653,6 @@
             return words.toLowerCase();
         }
 
-        // Initialize table
         renderInvoiceTable();
 
         // PDF Generation mirroring "image_54dbe8.jpg"
@@ -593,23 +680,19 @@
                 totalTTC: document.getElementById('invTotalTTC').innerText
             };
 
-            // Save to Firebase
             await push(ref(db, 'factures'), invData);
 
-            // Generate PDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Draw Top Boxes (Supplier left, Client right)
             doc.setLineWidth(0.3);
-            doc.rect(14, 15, 182, 35); // Main box
-            doc.line(105, 15, 105, 50); // Vertical middle line
+            doc.rect(14, 15, 182, 35); 
+            doc.line(105, 15, 105, 50); 
 
             doc.setFontSize(10);
             
-            // Supplier Text (Left)
-            doc.setFont("helvetica", "bold");
-            doc.text("Fournisseur", 16, 20);
+            // المورد
+            doc.setFont("helvetica", "bold"); doc.text("Fournisseur", 16, 20);
             doc.setFont("helvetica", "normal");
             doc.text(`Adresse Fournisseur: ${invData.supplier.address}`, 16, 26);
             doc.text(`RC: ${invData.supplier.rc}`, 16, 32);
@@ -617,31 +700,23 @@
             doc.text(`Article d'imposition: ${invData.supplier.ai}`, 16, 44);
             doc.text(`Mobile: ${invData.supplier.mobile}`, 16, 50);
 
-            // Client Text (Right)
-            doc.setFont("helvetica", "bold");
-            doc.text(invData.client.name, 194, 20, { align: "right" });
+            // الزبون
+            doc.setFont("helvetica", "bold"); doc.text(invData.client.name, 194, 20, { align: "right" });
             doc.setFont("helvetica", "normal");
             doc.text(`Adresse Client: ${invData.client.address}`, 194, 26, { align: "right" });
             doc.text(`RC Client: ${invData.client.rc}`, 194, 32, { align: "right" });
             doc.text(`NIF Client: ${invData.client.nif}`, 194, 38, { align: "right" });
             doc.text(`AI Client: ${invData.client.ai}`, 194, 44, { align: "right" });
 
-            // Date & Facture Number
             doc.setFontSize(12);
             doc.setFont("helvetica", "bold");
             doc.text("Date", 16, 65);
-            doc.text(invData.date ? invData.date.split('-').reverse().join('/') : "", 50, 65); // Format DD/MM/YYYY
+            doc.text(invData.date ? invData.date.split('-').reverse().join('/') : "", 50, 65);
             doc.text("Facture N°", 16, 72);
             doc.text(invData.number, 50, 72);
 
-            // Items Table Formatting matches image_54dbe8.jpg
             let tableRows = invoiceItems.map((item, idx) => [
-                (idx + 1).toString(),
-                item.des,
-                item.u,
-                item.qt.toFixed(2),
-                item.pu.toFixed(2),
-                (item.qt * item.pu).toFixed(2)
+                (idx + 1).toString(), item.des, item.u, item.qt.toFixed(2), item.pu.toFixed(2), (item.qt * item.pu).toFixed(2)
             ]);
 
             doc.autoTable({
@@ -652,46 +727,29 @@
                 headStyles: { fillColor: [255, 255, 255], textColor: 0, fontStyle: 'bold', halign: 'center', lineWidth: 0.3, lineColor: 0 },
                 styles: { textColor: 0, lineWidth: 0.3, lineColor: 0 },
                 columnStyles: {
-                    0: { halign: 'center', cellWidth: 10 },
-                    1: { halign: 'left' },
-                    2: { halign: 'center', cellWidth: 15 },
-                    3: { halign: 'right', cellWidth: 25 },
-                    4: { halign: 'right', cellWidth: 35 },
-                    5: { halign: 'right', cellWidth: 35, fontStyle: 'bold' }
+                    0: { halign: 'center', cellWidth: 10 }, 1: { halign: 'left' }, 2: { halign: 'center', cellWidth: 15 },
+                    3: { halign: 'right', cellWidth: 25 }, 4: { halign: 'right', cellWidth: 35 }, 5: { halign: 'right', cellWidth: 35, fontStyle: 'bold' }
                 }
             });
 
             let finalY = doc.lastAutoTable.finalY;
-
-            // Totals Block
             const tHT = parseFloat(document.getElementById('invTotalHT').innerText);
             const tTVA = parseFloat(document.getElementById('invTVA').innerText);
             const tTTC = parseFloat(document.getElementById('invTotalTTC').innerText);
 
             doc.autoTable({
-                startY: finalY,
-                margin: { left: 125 },
-                body: [
-                    ["TOTAL H.T", tHT.toFixed(2)],
-                    ["TVA 19 %", tTVA.toFixed(2)],
-                    ["TOTAL", tTTC.toFixed(2)]
-                ],
-                theme: 'grid',
-                styles: { textColor: 0, lineWidth: 0.3, lineColor: 0, fontStyle: 'bold' },
-                columnStyles: {
-                    0: { halign: 'left', cellWidth: 36 },
-                    1: { halign: 'right', cellWidth: 35 }
-                }
+                startY: finalY, margin: { left: 125 },
+                body: [ ["TOTAL H.T", tHT.toFixed(2)], ["TVA 19 %", tTVA.toFixed(2)], ["TOTAL", tTTC.toFixed(2)] ],
+                theme: 'grid', styles: { textColor: 0, lineWidth: 0.3, lineColor: 0, fontStyle: 'bold' },
+                columnStyles: { 0: { halign: 'left', cellWidth: 36 }, 1: { halign: 'right', cellWidth: 35 } }
             });
 
-            // "Arrete la presente facture..." block
             finalY = doc.lastAutoTable.finalY;
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
             const wordsStr = document.getElementById('invAmountWords').innerText;
             doc.text(`ARRETE LA PRESENTE FACTURE DE : ${wordsStr}`, 16, finalY + 15);
 
-            // Signature
             doc.setFont("helvetica", "bold");
             doc.text("Entreprise :", 105, finalY + 40, { align: "center" });
 

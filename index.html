@@ -697,8 +697,9 @@
             doc.text(`Adresse Fournisseur: ${invData.supplier.address}`, 16, 26);
             doc.text(`RC: ${invData.supplier.rc}`, 16, 32);
             doc.text(`N° Ident/Fiscale: ${invData.supplier.nif}`, 16, 38);
-            doc.text(`Article d'imposition: ${invData.supplier.ai}`, 16, 44);
-            doc.text(`Mobile: ${invData.supplier.mobile}`, 16, 50);
+            doc.text(`NIS: ${invData.supplier.nis}`, 16, 44);
+            doc.text(`Article d'imposition: ${invData.supplier.ai}`, 16, 50);
+            doc.text(`Mobile: ${invData.supplier.mobile}`, 16, 56);
 
             // الزبون
             doc.setFont("helvetica", "bold"); doc.text(invData.client.name, 194, 20, { align: "right" });
@@ -706,7 +707,8 @@
             doc.text(`Adresse Client: ${invData.client.address}`, 194, 26, { align: "right" });
             doc.text(`RC Client: ${invData.client.rc}`, 194, 32, { align: "right" });
             doc.text(`NIF Client: ${invData.client.nif}`, 194, 38, { align: "right" });
-            doc.text(`AI Client: ${invData.client.ai}`, 194, 44, { align: "right" });
+            doc.text(`NIS Client: ${invData.client.nis}`, 194, 44, { align: "right" });
+            doc.text(`AI Client: ${invData.client.ai}`, 194, 50, { align: "right" });
 
             doc.setFontSize(12);
             doc.setFont("helvetica", "bold");
